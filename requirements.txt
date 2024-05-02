@@ -1,0 +1,11 @@
+openai
+pandas
+tiktoken
+fastapi
+scipy
+jupyter
+matplotlib
+torch
+scikit-learn
+pymilvus==2.4.0
+uvicorn
