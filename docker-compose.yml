@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  restful_apisss:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8009:8009"
+    environment:
+      MIVILUS_HOST: ${MIVILUS_HOST}
+      MIVILUS_PORT: ${MIVILUS_PORT}
+    depends_on:
+      - postgres
+    networks:
+      - mynetwork
+
+  mivilus:
+    image: "milvusdb/milvus:v2.4.0"
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    environment:
+      ETCD_USE_EMBED: true
+      ETCD_DATA_DIR: /var/lib/milvus/etcd
+      ETCD_CONFIG_PATH: /milvus/configs/embedEtcd.yaml
+      COMMON_STORAGETYPE: local
+    volumes:
+      - $(pwd)/volumes/milvus:/var/lib/milvus
+      - $(pwd)/embedEtcd.yaml:/milvus/configs/embedEtcd.yaml
+    security_opt:
+      - seccomp:unconfined
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9091/healthz" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 90s
+    networks:
+      - mynetwork
+    command: ["1>", "/dev/null"]
+
+  rabbitmq:
+    image: "rabbitmq:management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "2379:2379"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - mynetwork
+
+#  worker:
+#    image: python:3.9
+#    build:
+#      context: .
+#      dockerfile: Dockerfile-rabbitmq-consumer
+#    volumes:
+#      - ./uploaded-files:/uploaded-files
+#    environment:
+#      POSTGRES_HOST: ${POSTGRES_HOST}
+#      POSTGRES_DB: ${POSTGRES_DB}
+#      POSTGRES_USER: ${POSTGRES_USER}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#    depends_on:
+#      - rabbitmq
+#      - postgres
+#    networks:
+#      - mynetwork
+
+
+networks:
+  mynetwork:
+    driver: bridge
