@@ -124,12 +124,12 @@ class DataScrapeService:
                 self.visited.add(curr_job.href)
         return parsed_documents
 
-    def handle_data_scrape_job(self, data_scrape_job: DataScrapeJob):
+    def handle_data_scrape_job(self, data_scrape_job: DataScrapeJob, create_embeddings: bool=False):
         parsed_documents: list[DataScrapeResult] = self.scrape()
         for document in parsed_documents:
             result = self.open_ai_service.get_embedding_by_url(document.url)
             if len(result) == 0:
                 embedding = Embedding(embeddings_type=data_scrape_job.embeddings_type,
                                       text=document.content, url=document.url)
-                self.open_ai_service.create_embedding(embedding)
+                self.open_ai_service.create_embedding(embedding, create_embeddings)
 
