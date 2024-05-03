@@ -5,6 +5,7 @@ fastapi
 scipy
 jupyter
 matplotlib
+selenium
 torch
 scikit-learn
 pymilvus==2.4.0

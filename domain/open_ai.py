@@ -1,9 +1,5 @@
 from pydantic import BaseModel
-
-
-class EmbeddingsRequest(BaseModel):
-    text: str
-
+from typing import Optional
 
 class EmbeddingsCreationResponse(BaseModel):
     ids: list[float]
@@ -15,3 +11,11 @@ class ChatGptQuestionReq(BaseModel):
     embeddings_type: str
     intro: str
     seperator: str
+
+
+class Embedding(BaseModel):
+    id: Optional[str]=None
+    url: Optional[str]=None
+    vector: Optional[list[float]]=None
+    embeddings_type: str
+    text: str

@@ -3,6 +3,7 @@ import os
 import tiktoken
 from openai import OpenAI
 
+from domain.open_ai import Embedding
 from repositories.open_ai_embeddings_repository import OpenAiEmbeddingsRepository
 
 
@@ -30,14 +31,18 @@ class OpenAiService():
         query_embedding = query_embedding_response.data[0].embedding
         return query_embedding
 
-    def create_embedding(self, query, embeddings_type: str):
-        token_count = self.get_num_of_tokens(query, self.EMBEDDING_MODEL)
-        embedding = self.get_embedding_from_open_ai(query)
-        result = self.open_ai_repository.insert([{'vector': embedding, 'embeddings_type': embeddings_type, 'text': query}])
+    def create_embedding(self, embedding: Embedding):
+        token_count = self.get_num_of_tokens(embedding.text, self.EMBEDDING_MODEL)
+        embedding_vector = self.get_embedding_from_open_ai(embedding.text)
+        embedding.vector = embedding_vector
+        result = self.open_ai_repository.insert([embedding.dict(exclude_none=True)])
         return result, token_count
 
     def get_related_embeddings(self, embedding, filter_param, output_fields=None):
         return self.open_ai_repository.search([embedding], filter_param, output_fields=output_fields)
+
+    def get_embedding_by_url(self, url):
+        return self.open_ai_repository.query(filter=f'$meta["url"] == "{url}"', limit=10)
 
     def get_num_of_tokens(self, text: str, model: str) -> int:
         """
