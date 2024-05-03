@@ -11,7 +11,7 @@ services:
       MIVILUS_HOST: ${MIVILUS_HOST}
       MIVILUS_PORT: ${MIVILUS_PORT}
     depends_on:
-      - postgres
+      - mivilus
     networks:
       - mynetwork
 
