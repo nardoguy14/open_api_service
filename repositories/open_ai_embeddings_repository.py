@@ -10,6 +10,6 @@ class OpenAiEmbeddingsRepository(MivilusBaseRepository):
     def __init__(self):
         host = os.environ['MIVILUS_HOST']
         port = os.environ['MIVILUS_PORT']
-        full_host = f"${host}:${port}"
-        super().__init__(self.COLLECTION_NAME, full_host)
+        full_host = f"{host}:{port}"
+        super().__init__(full_host, self.COLLECTION_NAME)
 

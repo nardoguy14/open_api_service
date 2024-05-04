@@ -3,7 +3,7 @@ from pymilvus import MilvusClient, DataType
 
 class MivilusBaseRepository():
 
-    def __init__(self, collection_name, host):
+    def __init__(self, host, collection_name):
         self.client = MilvusClient(uri=host)
         self.collection_name = collection_name
 
