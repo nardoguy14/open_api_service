@@ -1,6 +1,5 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
-from selenium.webdriver.chrome.options import Options
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -101,8 +100,6 @@ class DataScrapeService:
         We set up a starting job where to start and do a BFS search down the website iteratively.
 
         We also build a graph along the way.
-        :param depth:
-        :param parsed_documents:
         :return:
         """
         depth = 0
