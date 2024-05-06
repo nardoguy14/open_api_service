@@ -93,6 +93,8 @@ class OpenAiService():
         """Answers a query using GPT and a dataframe of relevant texts and embeddings."""
         message = self.generate_query_message(query, prior_knowledge=prior_knowledge, intro=intro, seperator=seperator,
                                               model=model, token_budget=token_budget)
+        print("the message query will be:")
+        print(message)
         messages = [
             {"role": "system", "content": "You answer questions about Covered California Health Insurnace."},
             {"role": "user", "content": message},

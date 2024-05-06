@@ -84,6 +84,17 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
     depends_on:
       - standalone
+      - selenium
+
+  selenium:
+    container_name: selenium_container
+    image: "seleniarm/standalone-chromium:latest"
+    ports:
+      - "4444:4444"
+      - "5900:5900"
+      - "7900:7900"
+    shm_size: '2gb'
+
 
   #  worker:
   #    image: python:3.9

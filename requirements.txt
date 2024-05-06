@@ -1,12 +1,11 @@
+bs4
 openai
 pandas
 tiktoken
 fastapi
 scipy
-jupyter
 matplotlib
+networkx
 selenium
-torch
-scikit-learn
 pymilvus==2.4.0
 uvicorn

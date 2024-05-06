@@ -27,9 +27,11 @@ class DataScrapeService:
         Creates chrome web driver to grab html.
         :return: Driver
         """
-        chrome_options = Options()
-        chrome_options.add_argument('--headless')
-        driver = webdriver.Chrome(options=chrome_options)
+        chromeOptionsRemote = webdriver.ChromeOptions()
+        chromeOptionsRemote.add_argument("--headless")
+        chromeOptionsRemote.add_argument("--no-sandbox")
+        chromeOptionsRemote.add_argument("--disable-dev-shm-usage")
+        driver = webdriver.Remote(options=chromeOptionsRemote, command_executor='http://selenium:4444/wd/hub')
         return driver
 
     def get_page_html(self, url):
@@ -66,6 +68,7 @@ class DataScrapeService:
         href = link['href']
         if not href.startswith('http'):
             href = self.url + href
+        print(f"parsed url: {href}")
         return href
 
     def add_links_to_queue(self, links, curr_job, queue, path):
@@ -127,9 +130,14 @@ class DataScrapeService:
     def handle_data_scrape_job(self, data_scrape_job: DataScrapeJob, create_embeddings: bool=False):
         parsed_documents: list[DataScrapeResult] = self.scrape()
         for document in parsed_documents:
-            result = self.open_ai_service.get_embedding_by_url(document.url)
-            if len(result) == 0:
-                embedding = Embedding(embeddings_type=data_scrape_job.embeddings_type,
-                                      text=document.content, url=document.url)
-                self.open_ai_service.create_embedding(embedding, create_embeddings)
+            try:
+                result = self.open_ai_service.get_embedding_by_url(document.url)
+                print(f"the result is {len(result)}")
+                if len(result) == 0:
+                    embedding = Embedding(embeddings_type=data_scrape_job.embeddings_type,
+                                          text=document.content, url=document.url)
+                    self.open_ai_service.create_embedding(embedding, create_embeddings)
+            except Exception as e:
+                print("Broke on document")
+                print(e)
 
