@@ -9,6 +9,32 @@ and store the related text into the database. When answers can't be question reg
 to define a deeper level for the data scrapper to dig down through. We are sure not to reconstruct embeddings for urls we
 have already seen hence not incurring any unnecessary costs.
 
+# Dependencies
+
+You will need to set the following environment variables:
+
+One thing you will need to get is an api key to hit OpenAI endpoints. Calls to this endpoint aren't free. You
+will need to sign up to attain your own key here: https://platform.openai.com/docs/quickstart
+
+```shell
+      export MIVILUS_HOST=http://standalone
+      export MIVILUS_PORT=19530
+      export OPENAI_API_KEY=< place your own api key here >
+```
+
+# Running the Service
+This will stand up all the needed containers that constitute the service including the RESTful service, a selenium container,
+and a Mivilus vector database along with its dependencies.
+
+```shell
+docker-compose up
+```
+
+# Calling the Service
+
+The available endpoints can be seen at `http://localhost:8009`. You will be able to call the ingestion api and question
+endpoint.
+
 # Design
 
 ## Ingestion of Website Content to Embeddings
