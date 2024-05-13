@@ -134,6 +134,7 @@ services:
     depends_on:
       - rabbitmq
       - postgres
+      - standalone
 
 networks:
   default:
