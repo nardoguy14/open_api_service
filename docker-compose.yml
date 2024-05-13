@@ -36,6 +36,19 @@ services:
       timeout: 20s
       retries: 3
 
+
+  postgres:
+    image: "postgres:13"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
   standalone:
     container_name: milvus_standalone_embed_svc
     image: milvusdb/milvus:v2.4.0
@@ -43,6 +56,10 @@ services:
     security_opt:
       - seccomp:unconfined
     environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       ETCD_ENDPOINTS: etcd:2379
       MINIO_ADDRESS: minio:9000
     volumes:
@@ -79,6 +96,10 @@ services:
     ports:
       - "8009:8009"
     environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       MIVILUS_HOST: ${MIVILUS_HOST}
       MIVILUS_PORT: ${MIVILUS_PORT}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
@@ -96,23 +117,23 @@ services:
     shm_size: '2gb'
 
 
-  #  worker:
-  #    image: python:3.9
-  #    build:
-  #      context: .
-  #      dockerfile: Dockerfile-rabbitmq-consumer
-  #    volumes:
-  #      - ./uploaded-files:/uploaded-files
-  #    environment:
-  #      POSTGRES_HOST: ${POSTGRES_HOST}
-  #      POSTGRES_DB: ${POSTGRES_DB}
-  #      POSTGRES_USER: ${POSTGRES_USER}
-  #      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #    depends_on:
-  #      - rabbitmq
-  #      - postgres
-  #    networks:
-  #      - mynetwork
+  data_scrape_worker:
+    image: python:3.9
+    build:
+      context: .
+      dockerfile: Dockerfile-rabbitmq-consumer
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      MIVILUS_HOST: ${MIVILUS_HOST}
+      MIVILUS_PORT: ${MIVILUS_PORT}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}]
+      CONSUMER: 1
+    depends_on:
+      - rabbitmq
+      - postgres
 
 networks:
   default:

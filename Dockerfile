@@ -8,6 +8,7 @@ WORKDIR /
 
 COPY requirements.txt /
 COPY /domain/ /domain
+COPY /util/ /util
 COPY /repositories /repositories
 COPY /routers /routers
 COPY /services /services

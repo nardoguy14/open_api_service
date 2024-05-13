@@ -1,11 +1,16 @@
+alembic
+aio_pika
 bs4
 openai
 pandas
 tiktoken
 fastapi
+gino_starlette
 scipy
 matplotlib
 networkx
+pika
+psycopg2-binary
 selenium
 pymilvus==2.4.0
 uvicorn

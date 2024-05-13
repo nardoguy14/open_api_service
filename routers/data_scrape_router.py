@@ -3,13 +3,16 @@ from fastapi import APIRouter, Query
 
 from domain.data_scrape import DataScrapeJob, DataScrapeResult
 from services.data_scrape_service import DataScrapeService
+from util.data_scrape_producer import DataScrapeProducer
 
 data_scrapper_router = APIRouter()
 
 
 @data_scrapper_router.post("/job/data_scrape")
 def create_data_scrape_job(data_scrape_job: DataScrapeJob, create_embeddings: bool = Query(False)):
-    base_url = data_scrape_job.url.split(".")[1]
-    data_scrape_service = DataScrapeService(data_scrape_job.url, base_url, max_depth=data_scrape_job.max_depth)
-    data_scrape_service.handle_data_scrape_job(data_scrape_job, create_embeddings)
+    producer = DataScrapeProducer()
+    producer.send_new_data_scrape_job({
+        'data_scrape_job': data_scrape_job.__dict__,
+        'create_embeddings': create_embeddings
+    })
 

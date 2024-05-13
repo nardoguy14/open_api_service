@@ -7,6 +7,7 @@ import uuid
 
 from domain.data_scrape import Job, DataScrapeResult, DataScrapeJob
 from domain.open_ai import Embedding
+from repositories.data_scrape_repository import DataScrapeRepository
 from services.open_ai_service import OpenAiService
 
 
@@ -20,6 +21,7 @@ class DataScrapeService:
         self.max_depth = max_depth
         self.reset_dependencies()
         self.open_ai_service = OpenAiService()
+        self.data_scrape_repository = DataScrapeRepository()
 
     def _create_driver(self):
         """
@@ -95,7 +97,7 @@ class DataScrapeService:
         if curr_job.parent:
             self.graph.add_edge(curr_job.parent, path)
 
-    def scrape(self) -> list[DataScrapeResult]:
+    async def scrape(self, scrape_id) -> list[DataScrapeResult]:
         """
         We set up a starting job where to start and do a BFS search down the website iteratively.
 
@@ -119,13 +121,17 @@ class DataScrapeService:
                 links = parser.find_all('a', href=True)
                 self.add_links_to_queue(links, curr_job, queue, path)
                 print(f"queue {len(queue)} seen {len(self.visited)}")
+                await self.data_scrape_repository.update_data_scrape_job(scrape_id, len(queue), len(self.visited), "RUNNING")
 
             except Exception as e:
                 self.visited.add(curr_job.href)
+        await self.data_scrape_repository.update_data_scrape_job_status(scrape_id, "FINISHED SCRAPING")
         return parsed_documents
 
-    def handle_data_scrape_job(self, data_scrape_job: DataScrapeJob, create_embeddings: bool=False):
-        parsed_documents: list[DataScrapeResult] = self.scrape()
+    async def handle_data_scrape_job(self, data_scrape_job: DataScrapeJob, create_embeddings: bool=False):
+        current_job = await self.data_scrape_repository.create_data_scrape_job(data_scrape_job)
+        print(current_job)
+        parsed_documents: list[DataScrapeResult] = await self.scrape(current_job.id)
         for document in parsed_documents:
             try:
                 result = self.open_ai_service.get_embedding_by_url(document.url)
