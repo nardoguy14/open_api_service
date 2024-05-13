@@ -3,13 +3,13 @@ import os
 import uvicorn
 from fastapi import FastAPI
 
-from repositories.postgres_repository import db
+from repositories.postgres_repository import postgres_base_repo
 from routers.open_api_router import open_ai_router
 from routers.data_scrape_router import data_scrapper_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-db.init_app(app)
+postgres_base_repo.db.init_app(app)
 
 
 app.include_router(open_ai_router)

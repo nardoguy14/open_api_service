@@ -18,3 +18,6 @@ class DataScrapeRepository():
         job = await DataScrapeJobSql.get(id)
         if job:
             await job.update(status=status).apply()
+
+    async def get_data_scrape_job(self, id):
+        return await DataScrapeJobSql.get(id)

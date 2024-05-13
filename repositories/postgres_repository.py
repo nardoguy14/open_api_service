@@ -9,14 +9,13 @@ DATABASE_URL = f"postgresql://{os.environ['POSTGRES_USER']}:{os.environ['POSTGRE
 class PostgresBaseRepository():
 
     def __init__(self):
-        if os.environ['CONSUMER']:
+        if "CONSUMER" in os.environ:
             self.db = BaseGino()
         else:
-            if not self.db:
-                self.db = Gino(dsn=DATABASE_URL)
+            self.db = Gino(dsn=DATABASE_URL)
 
     async def connect(self):
-        if os.environ['CONSUMER']:
+        if "CONSUMER" in os.environ:
             await self.db.set_bind(DATABASE_URL)
 
 
