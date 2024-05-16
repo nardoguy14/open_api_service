@@ -1,4 +1,4 @@
-import json
+import ast
 
 from domain.data_scrape import DataScrapeJob
 from services.data_scrape_service import DataScrapeService
@@ -31,7 +31,7 @@ class DataScrapeRabbitMqConsumer(RabbitMqConsumer):
         return commands_to_actions[routing_key]
 
     async def handle_patient_registration_message(self, body):
-        body = json.loads(body)
+        body = ast.literal_eval(body)
         print(f"run the job")
         date_scrape_job_dict = body['data_scrape_job']
         create_embeddings = bool(body['create_embeddings'])

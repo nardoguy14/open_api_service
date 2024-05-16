@@ -21,3 +21,9 @@ class DataScrapeRepository():
 
     async def get_data_scrape_job(self, id):
         return await DataScrapeJobSql.get(id)
+
+    async def get_data_scrap_job(self, data_scrape_job: DataScrapeJob):
+        jobs = await DataScrapeJobSql.query.where((DataScrapeJobSql.url == data_scrape_job.url) &
+                                                   (DataScrapeJobSql.max_depth == data_scrape_job.max_depth) &
+                                                   (DataScrapeJobSql.embeddings_type == data_scrape_job.embeddings_type)).gino.all()
+        return jobs
