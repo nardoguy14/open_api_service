@@ -1,5 +1,6 @@
-from domain.data_scrape import DataScrapeJob
+from domain.data_scrape import DataScrapeJob, DataScrapeResult
 from domain.sql_alchemy_models.data_scrape_model import DataScrapeJob as DataScrapeJobSql
+from domain.sql_alchemy_models.data_scrape_model import DataScrapeJobUrl as DataScrapeJobUrlSql
 
 
 class DataScrapeRepository():
@@ -7,6 +8,11 @@ class DataScrapeRepository():
     async def create_data_scrape_job(self, job: DataScrapeJob):
         result = await DataScrapeJobSql.create(url=job.url, max_depth=job.max_depth, embeddings_type=job.embeddings_type,
                                          status="CREATED")
+        return result
+
+    async def create_data_scrape_job_url(self, job_url: DataScrapeResult, embeddings_type: str):
+        result = await DataScrapeJobUrlSql.create(main_url=job_url.main_url, url=job_url.url,
+                                         text=job_url.content, embeddings_type=embeddings_type)
         return result
 
     async def update_data_scrape_job(self, id, queue_size: int, sites_seen: int, status: str):
@@ -22,8 +28,6 @@ class DataScrapeRepository():
     async def get_data_scrape_job(self, id):
         return await DataScrapeJobSql.get(id)
 
-    async def get_data_scrap_job(self, data_scrape_job: DataScrapeJob):
-        jobs = await DataScrapeJobSql.query.where((DataScrapeJobSql.url == data_scrape_job.url) &
-                                                   (DataScrapeJobSql.max_depth == data_scrape_job.max_depth) &
-                                                   (DataScrapeJobSql.embeddings_type == data_scrape_job.embeddings_type)).gino.all()
+    async def get_data_scrap_job(self, embeddings_type: str):
+        jobs = await DataScrapeJobSql.query.where((DataScrapeJobSql.embeddings_type == embeddings_type)).gino.all()
         return jobs

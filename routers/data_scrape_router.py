@@ -24,6 +24,6 @@ async def get_data_scrape_job_by_id(id: int):
 
 
 @data_scrapper_router.get("/job/data_scrape")
-async def get_data_scrap_job(data_scrape_job: DataScrapeJob):
+async def get_data_scrap_job(embeddings_type: str = Query(None)):
     data_scrape_service = DataScrapeRepository()
-    return await data_scrape_service.get_data_scrap_job(data_scrape_job)
+    return await data_scrape_service.get_data_scrap_job(embeddings_type)

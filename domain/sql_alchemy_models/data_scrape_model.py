@@ -16,3 +16,14 @@ class DataScrapeJob(db.Model):
     status = db.Column(db.VARCHAR(50))
     created_at = db.Column(db.DateTime(), nullable=False, server_default=func.now())
     modified_at = db.Column(db.DateTime(), nullable=False, server_default=func.now())
+
+
+class DataScrapeJobUrl(db.Model):
+    __tablename__ = 'data_scrape_urls'
+    id = db.Column(db.Integer, primary_key=True)
+    main_url = db.Column(db.VARCHAR(255), nullable=False)
+    url = db.Column(db.VARCHAR(512), nullable=False)
+    text = db.Column(db.Text, nullable=False)
+    embeddings_type = db.Column(db.VARCHAR(255))
+    created_at = db.Column(db.DateTime(), nullable=False, server_default=func.now())
+    modified_at = db.Column(db.DateTime(), nullable=False, server_default=func.now())

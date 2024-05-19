@@ -7,7 +7,7 @@ class Job(BaseModel):
     parent: Optional[str]
 
     def __hash__(self):
-        return hash((self.href))
+        return hash(self.href)
 
     def __eq__(self, other):
         if not isinstance(other, Job):
@@ -22,5 +22,6 @@ class DataScrapeJob(BaseModel):
 
 
 class DataScrapeResult(BaseModel):
+    main_url: Optional[str]=None
     url: str
     content: str

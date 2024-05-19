@@ -80,6 +80,8 @@ class DataScrapeService:
         """
         for link in links:
             href = self.add_host_if_needed(link)
+            print(f"this is the host for hte link: {href}")
+            print(f"adding to queue: {href not in self.visited and self.base_url in href and curr_job.depth + 1 < self.max_depth}")
             if (href not in self.visited and
                     self.base_url in href and
                     curr_job.depth + 1 < self.max_depth) :
@@ -111,13 +113,14 @@ class DataScrapeService:
         queue.add(initial_job)
         while queue:
             curr_job = queue.pop()
+            print(self.visited)
             try:
                 self.visited.add(curr_job.href)
                 path = uuid.uuid4().hex[:4]
-                self.add_edge_to_graph(curr_job, path)
+                # self.add_edge_to_graph(curr_job, path)
                 html = self.get_page_html(curr_job.href)
                 parser = BeautifulSoup(html, 'html.parser')
-                parsed_documents.append(DataScrapeResult(url=curr_job.href, content=parser.get_text()))
+                parsed_documents.append(DataScrapeResult(url=curr_job.href, content=parser.get_text(), main_url=self.url))
                 links = parser.find_all('a', href=True)
                 self.add_links_to_queue(links, curr_job, queue, path)
                 print(f"queue {len(queue)} seen {len(self.visited)}")
@@ -126,6 +129,7 @@ class DataScrapeService:
             except Exception as e:
                 self.visited.add(curr_job.href)
         await self.data_scrape_repository.update_data_scrape_job_status(scrape_id, "FINISHED SCRAPING")
+        self.driver.quit()
         return parsed_documents
 
     async def handle_data_scrape_job(self, data_scrape_job: DataScrapeJob, create_embeddings: bool=False):
@@ -133,14 +137,18 @@ class DataScrapeService:
         print(current_job)
         parsed_documents: list[DataScrapeResult] = await self.scrape(current_job.id)
         for document in parsed_documents:
-            try:
-                result = self.open_ai_service.get_embedding_by_url(document.url)
-                print(f"the result is {len(result)}")
-                if len(result) == 0:
-                    embedding = Embedding(embeddings_type=data_scrape_job.embeddings_type,
-                                          text=document.content, url=document.url)
-                    self.open_ai_service.create_embedding(embedding, create_embeddings)
-            except Exception as e:
-                print("Broke on document")
-                print(e)
+            await self.data_scrape_repository.create_data_scrape_job_url(document, data_scrape_job.embeddings_type)
+
+
+
+            # try:
+            #     result = self.open_ai_service.get_embedding_by_url(document.url)
+            #     print(f"the result is {len(result)}")
+            #     if len(result) == 0:
+            #         embedding = Embedding(embeddings_type=data_scrape_job.embeddings_type,
+            #                               text=document.content, url=document.url)
+            #         self.open_ai_service.create_embedding(embedding, create_embeddings)
+            # except Exception as e:
+            #     print("Broke on document")
+            #     print(e)
 
