@@ -138,17 +138,3 @@ class DataScrapeService:
         parsed_documents: list[DataScrapeResult] = await self.scrape(current_job.id)
         for document in parsed_documents:
             await self.data_scrape_repository.create_data_scrape_job_url(document, data_scrape_job.embeddings_type)
-
-
-
-            # try:
-            #     result = self.open_ai_service.get_embedding_by_url(document.url)
-            #     print(f"the result is {len(result)}")
-            #     if len(result) == 0:
-            #         embedding = Embedding(embeddings_type=data_scrape_job.embeddings_type,
-            #                               text=document.content, url=document.url)
-            #         self.open_ai_service.create_embedding(embedding, create_embeddings)
-            # except Exception as e:
-            #     print("Broke on document")
-            #     print(e)
-

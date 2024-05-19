@@ -10,6 +10,7 @@ from repositories.open_ai_embeddings_repository import OpenAiEmbeddingsRepositor
 class OpenAiService():
 
     EMBEDDING_MODEL = "text-embedding-ada-002"
+    EMBEDDING_MODEL_COST = 0.1/1000000 #cents per million tokens
     GPT_MODEL = "gpt-3.5-turbo"
     OPEN_AI_KEY = os.environ.get("OPENAI_API_KEY")
 

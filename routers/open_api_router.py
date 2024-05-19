@@ -2,6 +2,7 @@ from fastapi import APIRouter, Query
 
 from domain.open_ai import EmbeddingsCreationResponse, ChatGptQuestionReq, Embedding
 from services.open_ai_service import OpenAiService
+from util.embeddings.embeddings_producer import EmbeddingsProducer
 
 open_ai_router = APIRouter()
 open_ai_service = OpenAiService()
@@ -10,6 +11,14 @@ open_ai_service = OpenAiService()
 def get_embeddings(embedding: Embedding, create_embeddings: bool = Query(False)):
     result, tokens = open_ai_service.create_embedding(embedding, create_embeddings)
     return EmbeddingsCreationResponse(ids=list(result['ids']), token_count=tokens)
+
+@open_ai_router.post("/openapi/embeddings/{embeddings_type}")
+def get_embeddings(embeddings_type: str, create_embeddings: bool = Query(False)):
+    producer = EmbeddingsProducer()
+    producer.send_embeddings_job({
+        'embeddings_type': embeddings_type,
+        'create_embeddings': create_embeddings
+    })
 
 @open_ai_router.post("/openapi/questions/response")
 def create_question(question: ChatGptQuestionReq):

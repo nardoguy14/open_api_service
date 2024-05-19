@@ -31,3 +31,8 @@ class DataScrapeRepository():
     async def get_data_scrap_job(self, embeddings_type: str):
         jobs = await DataScrapeJobSql.query.where((DataScrapeJobSql.embeddings_type == embeddings_type)).gino.all()
         return jobs
+
+    async def get_data_scrape_job_url(self, embeddings_type: str):
+        urls = await (DataScrapeJobUrlSql.query
+                      .where((DataScrapeJobUrlSql.embeddings_type == embeddings_type)).gino.all())
+        return urls
