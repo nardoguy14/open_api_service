@@ -10,7 +10,7 @@ from domain.rabbit_mq_routing_keys import RabbitmqRoutingKeys
 class EmbeddingsRabbitMqConsumer(RabbitMqConsumer):
 
 
-    async def consume_data_scrape_messages(self):
+    async def consume_embeddings_messages(self):
         await self.async_init(exchange_name="data_scrape_exchange",
                            routing_key=f"cmd.*",
                            queue_name="embeddings_queue",

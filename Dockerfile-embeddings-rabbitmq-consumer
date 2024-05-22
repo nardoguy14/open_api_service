@@ -12,7 +12,7 @@ COPY /repositories /app/repositories
 COPY /routers /app/routers
 COPY /services /app/services
 COPY /util /app/util
-COPY rabbit_mq_consumer.py /app
+COPY /util/embeddings/rabbit_mq_consumer.py /app
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 

@@ -121,7 +121,26 @@ services:
     image: python:3.9
     build:
       context: .
-      dockerfile: Dockerfile-rabbitmq-consumer
+      dockerfile: Dockerfile-datascrape-rabbitmq-consumer
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      MIVILUS_HOST: ${MIVILUS_HOST}
+      MIVILUS_PORT: ${MIVILUS_PORT}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}]
+      CONSUMER: 1
+    depends_on:
+      - rabbitmq
+      - postgres
+      - standalone
+
+  embeddings_worker:
+    image: python:3.9
+    build:
+      context: .
+      dockerfile: Dockerfile-embeddings-rabbitmq-consumer
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_DB: ${POSTGRES_DB}
