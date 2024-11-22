@@ -21,6 +21,6 @@ jobs:
       - name: Add vars to vars file
         run: |
           echo "hiiii" >> hi.tt
-          echo "s3_key = \"${{ inputs.s3_key }}\"" >> hi.txt
-          echo "partner = \"${{ inputs.partner }}\"" >> hi.txt
+          echo "s3_key = \"${{ inputs.var1 }}\"" >> hi.txt
+          echo "partner = \"${{ inputs.s3_key }}\"" >> hi.txt
           cat hi.txt
