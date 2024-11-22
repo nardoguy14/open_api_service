@@ -12,3 +12,15 @@ on:
       s3_key:
         description: "just a key"
         required: true
+
+
+jobs:
+  duhjob:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add vars to vars file
+        run: |
+          echo "hiiii" >> hi.tt
+          echo "s3_key = \"${{ inputs.s3_key }}\"" >> hi.txt
+          echo "partner = \"${{ inputs.partner }}\"" >> hi.txt
+          cat hi.txt
