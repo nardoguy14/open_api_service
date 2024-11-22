@@ -1,5 +1,5 @@
 
-from repositories.postgres_repository import postgres_base_repo
+from app.repositories.postgres_repository import postgres_base_repo
 from sqlalchemy.sql import func
 
 db = postgres_base_repo.db

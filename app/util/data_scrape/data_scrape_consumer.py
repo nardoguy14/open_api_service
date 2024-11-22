@@ -1,9 +1,9 @@
 import ast
 
-from domain.data_scrape import DataScrapeJob
-from services.data_scrape_service import DataScrapeService
-from util.base_consumer import RabbitMqConsumer
-from domain.rabbit_mq_routing_keys import RabbitmqRoutingKeys
+from app.domain.data_scrape import DataScrapeJob
+from app.services.data_scrape_service import DataScrapeService
+from app.util.base_consumer import RabbitMqConsumer
+from app.domain.rabbit_mq_routing_keys import RabbitmqRoutingKeys
 
 
 class DataScrapeRabbitMqConsumer(RabbitMqConsumer):

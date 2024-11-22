@@ -3,8 +3,8 @@ import os
 import tiktoken
 from openai import OpenAI
 
-from domain.open_ai import Embedding
-from repositories.open_ai_embeddings_repository import OpenAiEmbeddingsRepository
+from app.domain.open_ai import Embedding
+from app.repositories.open_ai_embeddings_repository import OpenAiEmbeddingsRepository
 
 
 class OpenAiService():

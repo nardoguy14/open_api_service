@@ -1,7 +1,9 @@
-from domain.data_scrape import DataScrapeJob, DataScrapeResult
-from domain.sql_alchemy_models.data_scrape_model import DataScrapeJob as DataScrapeJobSql
-from domain.sql_alchemy_models.data_scrape_model import DataScrapeJobUrl as DataScrapeJobUrlSql
+from sqlalchemy import distinct
 
+from app.domain.data_scrape import DataScrapeJob, DataScrapeResult
+from app.domain.sql_alchemy_models.data_scrape_model import DataScrapeJob as DataScrapeJobSql
+from app.domain.sql_alchemy_models.data_scrape_model import DataScrapeJobUrl as DataScrapeJobUrlSql
+from app.repositories.postgres_repository import postgres_base_repo
 
 class DataScrapeRepository():
 
@@ -36,3 +38,10 @@ class DataScrapeRepository():
         urls = await (DataScrapeJobUrlSql.query
                       .where((DataScrapeJobUrlSql.embeddings_type == embeddings_type)).gino.all())
         return urls
+
+    async def get_embedding_types(self):
+        values = await postgres_base_repo.db.select([distinct(DataScrapeJobUrlSql.embeddings_type)]).gino.all()
+        results = set()
+        for value in values:
+            results.add(value[0])
+        return {'embedding_types': list(results)}

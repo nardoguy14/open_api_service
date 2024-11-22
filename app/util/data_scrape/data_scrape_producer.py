@@ -1,5 +1,5 @@
-from domain.rabbit_mq_routing_keys import RabbitmqRoutingKeys
-from util.base_publisher import RabbitMqPublisher
+from app.domain.rabbit_mq_routing_keys import RabbitmqRoutingKeys
+from app.util.base_publisher import RabbitMqPublisher
 
 
 class DataScrapeProducer(RabbitMqPublisher):

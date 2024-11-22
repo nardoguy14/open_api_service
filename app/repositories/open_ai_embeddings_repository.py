@@ -1,6 +1,6 @@
 import os
 
-from repositories.mivilus_base_repository import MivilusBaseRepository
+from app.repositories.mivilus_base_repository import MivilusBaseRepository
 
 
 class OpenAiEmbeddingsRepository(MivilusBaseRepository):

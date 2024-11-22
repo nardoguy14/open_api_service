@@ -1,10 +1,10 @@
 
 from fastapi import APIRouter, Query
 
-from domain.data_scrape import DataScrapeJob
-from services.open_ai_service import OpenAiService
-from repositories.data_scrape_repository import DataScrapeRepository
-from util.data_scrape.data_scrape_producer import DataScrapeProducer
+from app.domain.data_scrape import DataScrapeJob
+from app.services.open_ai_service import OpenAiService
+from app.repositories.data_scrape_repository import DataScrapeRepository
+from app.util.data_scrape.data_scrape_producer import DataScrapeProducer
 
 data_scrapper_router = APIRouter()
 data_scrape_service = DataScrapeRepository()
@@ -47,3 +47,8 @@ async def get_data_scrape_token_count(embeddings_type: str = Query(None)):
         "unit_of_cost": "cents",
         "individual_token_counts": individual_token_counts
     }
+
+@data_scrapper_router.get("/embedding_types")
+async def get_embedding_types():
+    return await data_scrape_service.get_embedding_types()
+

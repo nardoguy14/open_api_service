@@ -1,0 +1,13 @@
+name: Test workflow
+
+test_workflow:
+  inputs:
+    var1:
+      description: "var1"
+      required: true
+      default: lala
+      options:
+        - lala
+    s3_key:
+      description: "just a key"
+      required: true

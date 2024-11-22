@@ -1,6 +1,6 @@
 import asyncio
-from util.data_scrape.data_scrape_consumer import DataScrapeRabbitMqConsumer
-from repositories.postgres_repository import postgres_base_repo
+from app.util.data_scrape.data_scrape_consumer import DataScrapeRabbitMqConsumer
+from app.repositories.postgres_repository import postgres_base_repo
 
 
 

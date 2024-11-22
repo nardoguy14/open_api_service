@@ -1,6 +1,6 @@
 import asyncio
-from util.embeddings.embeddings_consumer import EmbeddingsRabbitMqConsumer
-from repositories.postgres_repository import postgres_base_repo
+from app.util.embeddings.embeddings_consumer import EmbeddingsRabbitMqConsumer
+from app.repositories.postgres_repository import postgres_base_repo
 
 
 

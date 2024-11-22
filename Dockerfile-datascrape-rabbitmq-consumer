@@ -1,19 +1,23 @@
-FROM python:3.9
+FROM python:3.12
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-WORKDIR /app
+WORKDIR /
 
+COPY pyproject.toml /
 COPY requirements.txt /app/
-COPY /domain /app/domain
-COPY /repositories /app/repositories
-COPY /routers /app/routers
-COPY /services /app/services
-COPY /util /app/util
-COPY /util/data_scrape/rabbit_mq_consumer.py /app
-RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
+COPY /app/domain /app/domain
+COPY /app/repositories /app/repositories
+COPY /app/routers /app/routers
+COPY /app/services /app/services
+COPY /app/util /app/util
+COPY /app/util/data_scrape/rabbit_mq_consumer.py /app
+RUN pip install --upgrade pip
+#    && pip install -r /app/requirements.txt \
+RUN pip install poetry
+RUN poetry install
 
-CMD ["python", "rabbit_mq_consumer.py"]
+
+CMD poetry shell && python -m app.rabbit_mq_consumer

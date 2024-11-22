@@ -1,7 +1,5 @@
 import pika
 
-from domain.rabbit_mq_routing_keys import RabbitmqRoutingKeys
-
 
 class RabbitMqPublisher():
 

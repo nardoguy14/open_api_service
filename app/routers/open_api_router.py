@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Query
 
-from domain.open_ai import EmbeddingsCreationResponse, ChatGptQuestionReq, Embedding
-from services.open_ai_service import OpenAiService
-from util.embeddings.embeddings_producer import EmbeddingsProducer
+from app.domain.open_ai import EmbeddingsCreationResponse, ChatGptQuestionReq, Embedding
+from app.services.open_ai_service import OpenAiService
+from app.util.embeddings.embeddings_producer import EmbeddingsProducer
 
 open_ai_router = APIRouter()
 open_ai_service = OpenAiService()

@@ -1,11 +1,10 @@
 import ast
 
-from domain.data_scrape import DataScrapeJob
-from domain.open_ai import Embedding
-from repositories.data_scrape_repository import DataScrapeRepository
-from services.open_ai_service import OpenAiService
-from util.base_consumer import RabbitMqConsumer
-from domain.rabbit_mq_routing_keys import RabbitmqRoutingKeys
+from app.domain.open_ai import Embedding
+from app.repositories.data_scrape_repository import DataScrapeRepository
+from app.services.open_ai_service import OpenAiService
+from app.util.base_consumer import RabbitMqConsumer
+from app.domain.rabbit_mq_routing_keys import RabbitmqRoutingKeys
 
 class EmbeddingsRabbitMqConsumer(RabbitMqConsumer):
 

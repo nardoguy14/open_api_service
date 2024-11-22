@@ -5,10 +5,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import uuid
 
-from domain.data_scrape import Job, DataScrapeResult, DataScrapeJob
-from domain.open_ai import Embedding
-from repositories.data_scrape_repository import DataScrapeRepository
-from services.open_ai_service import OpenAiService
+from app.domain.data_scrape import Job, DataScrapeResult, DataScrapeJob
+from app.repositories.data_scrape_repository import DataScrapeRepository
+from app.services.open_ai_service import OpenAiService
 
 
 class DataScrapeService:
@@ -138,3 +137,6 @@ class DataScrapeService:
         parsed_documents: list[DataScrapeResult] = await self.scrape(current_job.id)
         for document in parsed_documents:
             await self.data_scrape_repository.create_data_scrape_job_url(document, data_scrape_job.embeddings_type)
+
+    async def get_embedding_types(self):
+        return await self.data_scrape_repository.get_embedding_types()

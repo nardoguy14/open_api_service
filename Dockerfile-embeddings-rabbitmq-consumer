@@ -4,16 +4,16 @@ FROM python:3.9
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-WORKDIR /app
+WORKDIR /
 
 COPY requirements.txt /app/
-COPY /domain /app/domain
-COPY /repositories /app/repositories
-COPY /routers /app/routers
-COPY /services /app/services
-COPY /util /app/util
-COPY /util/embeddings/rabbit_mq_consumer.py /app
+COPY /app/domain /app/domain
+COPY /app/repositories /app/repositories
+COPY /app/routers /app/routers
+COPY /app/services /app/services
+COPY /app/util /app/util
+COPY /app/util/embeddings/rabbit_mq_consumer.py /app
 RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
+    && pip install -r /app/requirements.txt
 
-CMD ["python", "rabbit_mq_consumer.py"]
+CMD python -m app.rabbit_mq_consumer

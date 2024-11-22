@@ -1,11 +1,9 @@
-import os
-
 import uvicorn
 from fastapi import FastAPI
 
-from repositories.postgres_repository import postgres_base_repo
-from routers.open_api_router import open_ai_router
-from routers.data_scrape_router import data_scrapper_router
+from app.repositories.postgres_repository import postgres_base_repo
+from app.routers.open_api_router import open_ai_router
+from app.routers.data_scrape_router import data_scrapper_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -26,5 +24,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 if __name__ == "__main__":
+    print("WEEE")
     # Run the FastAPI app using Uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8009)
