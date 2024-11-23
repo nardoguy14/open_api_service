@@ -20,15 +20,20 @@ class DataScrapeRabbitMqConsumer(RabbitMqConsumer):
             print(f"handling message {message.body.decode()}")
             full_routing_key = message.routing_key
             fcn = self.get_action(full_routing_key)
-            print("sending body to handler")
-            await fcn(message.body.decode())
+            if fcn:
+                await fcn(message.body.decode())
+            else:
+                print("no fcn to run")
 
     def get_action(self, routing_key):
         print(f'getting action for {routing_key}')
+        print(f"cmd.{RabbitmqRoutingKeys.CREATE_DATA_SCRAPE.name}")
         commands_to_actions = {
             f"cmd.{RabbitmqRoutingKeys.CREATE_DATA_SCRAPE.name}": self.handle_patient_registration_message
         }
-        return commands_to_actions[routing_key]
+        print(f"keys: {commands_to_actions.items()}")
+        action = commands_to_actions.get(routing_key, None)
+        return action
 
     async def handle_patient_registration_message(self, body):
         body = ast.literal_eval(body)

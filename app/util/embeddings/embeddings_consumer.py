@@ -21,14 +21,20 @@ class EmbeddingsRabbitMqConsumer(RabbitMqConsumer):
             full_routing_key = message.routing_key
             fcn = self.get_action(full_routing_key)
             print("sending body to handler")
-            await fcn(message.body.decode())
+            if fcn:
+                await fcn(message.body.decode())
+            else:
+                print("no fcn to run")
 
     def get_action(self, routing_key):
         print(f'getting action for {routing_key}')
         commands_to_actions = {
             f"cmd.{RabbitmqRoutingKeys.CREATE_EMBEDDINGS.name}": self.handle_embeddings_message
         }
-        return commands_to_actions[routing_key]
+        print(f"keys available: {commands_to_actions.keys()}")
+        action = commands_to_actions.get(routing_key, None)
+        return action
+
 
     async def handle_embeddings_message(self, body):
         body = ast.literal_eval(body)

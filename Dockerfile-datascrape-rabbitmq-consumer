@@ -13,10 +13,11 @@ COPY /app/repositories /app/repositories
 COPY /app/routers /app/routers
 COPY /app/services /app/services
 COPY /app/util /app/util
-COPY /app/util/data_scrape/rabbit_mq_consumer.py /app
 RUN pip install --upgrade pip
 RUN pip install poetry
 RUN poetry install
+RUN rm -rf /app/util/embeddings
 
 
-CMD poetry run python -m app.rabbit_mq_consumer
+CMD poetry run python -m app.util.data_scrape.rabbit_mq_consumer
+#CMD "tail -f /dev/null"

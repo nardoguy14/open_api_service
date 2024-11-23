@@ -118,7 +118,6 @@ services:
 
 
   data_scrape_worker:
-    image: python:3.9
     build:
       context: .
       dockerfile: Dockerfile-datascrape-rabbitmq-consumer
@@ -137,7 +136,7 @@ services:
       - standalone
 
   embeddings_worker:
-    image: python:3.9
+    image: python:3.12
     build:
       context: .
       dockerfile: Dockerfile-embeddings-rabbitmq-consumer
