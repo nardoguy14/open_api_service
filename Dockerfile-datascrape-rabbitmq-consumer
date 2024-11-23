@@ -15,9 +15,8 @@ COPY /app/services /app/services
 COPY /app/util /app/util
 COPY /app/util/data_scrape/rabbit_mq_consumer.py /app
 RUN pip install --upgrade pip
-#    && pip install -r /app/requirements.txt \
 RUN pip install poetry
 RUN poetry install
 
 
-CMD poetry shell && python -m app.rabbit_mq_consumer
+CMD poetry run python -m app.rabbit_mq_consumer

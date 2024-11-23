@@ -17,6 +17,5 @@ COPY app/main.py /app
 RUN pip install --upgrade pip
 RUN pip install poetry
 RUN poetry install
-#    && pip install -r requirements.txt
 
-CMD poetry shell && python -m app.main
+CMD poetry run python -m app.main

@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.12
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -6,6 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /
 
+COPY pyproject.toml /
 COPY requirements.txt /app/
 COPY /app/domain /app/domain
 COPY /app/repositories /app/repositories
@@ -13,7 +14,8 @@ COPY /app/routers /app/routers
 COPY /app/services /app/services
 COPY /app/util /app/util
 COPY /app/util/embeddings/rabbit_mq_consumer.py /app
-RUN pip install --upgrade pip \
-    && pip install -r /app/requirements.txt
+RUN pip install --upgrade pip
+RUN pip install poetry
+RUn poetry install
 
-CMD python -m app.rabbit_mq_consumer
+CMD poetry run python -m app.rabbit_mq_consumer
