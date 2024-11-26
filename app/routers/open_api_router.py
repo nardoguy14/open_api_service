@@ -34,4 +34,7 @@ def create_question(question: ChatGptQuestionReq):
     prior_knowledge=texts,
     model=open_ai_service.GPT_MODEL,
     token_budget=5000)
-    return response
+    return {
+        'response_message': response,
+        'related_messages': texts
+    }
