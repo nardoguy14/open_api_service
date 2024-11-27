@@ -36,7 +36,6 @@ services:
       timeout: 20s
       retries: 3
 
-
   postgres:
     image: "postgres:13"
     ports:
@@ -48,6 +47,14 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+
+  attu:
+    container_name: attu_svc
+    image: zilliz/attu:v2.4
+    ports:
+      - "8000:3000"
+    environment:
+      MILVUS_URL: http://standalone:19530
 
   standalone:
     container_name: milvus_standalone_embed_svc
@@ -116,7 +123,6 @@ services:
       - "7900:7900"
     shm_size: '2gb'
 
-
   data_scrape_worker:
     build:
       context: .
@@ -147,7 +153,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       MIVILUS_HOST: ${MIVILUS_HOST}
       MIVILUS_PORT: ${MIVILUS_PORT}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}]
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
       CONSUMER: 1
     depends_on:
       - rabbitmq

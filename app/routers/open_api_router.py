@@ -27,6 +27,7 @@ def create_question(question: ChatGptQuestionReq):
     embeddings_search_result = open_ai_service.get_related_embeddings(embedding=embedding_of_query, filter_param=filter, output_fields=['text'])
     texts = []
     for i in embeddings_search_result[0]:
+        print(i)
         texts.append(i['entity']['text'])
     response = open_ai_service.ask_chatgpt_question(query=question.query,
     intro=question.intro,
@@ -36,5 +37,5 @@ def create_question(question: ChatGptQuestionReq):
     token_budget=5000)
     return {
         'response_message': response,
-        'related_messages': texts
+        'related_messages': embeddings_search_result
     }

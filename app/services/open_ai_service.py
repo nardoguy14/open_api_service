@@ -34,12 +34,15 @@ class OpenAiService():
 
     def create_embedding(self, embedding: Embedding, create_embeddings: bool=False):
         token_count = self.get_num_of_tokens(embedding.text, self.EMBEDDING_MODEL)
+        result = self.open_ai_repository.insert([embedding.dict(exclude_none=True)])
+        return result, token_count
+
+    def generate_embeddings_from_openai(self, embedding: Embedding, create_embeddings: bool=False):
         if create_embeddings:
             embedding.vector = self.get_embedding_from_open_ai(embedding.text)
         else:
             embedding.vector = [0.0 for i in range(1536)]
-        result = self.open_ai_repository.insert([embedding.dict(exclude_none=True)])
-        return result, token_count
+        return embedding
 
     def get_related_embeddings(self, embedding, filter_param, output_fields=None):
         return self.open_ai_repository.search([embedding], filter_param, output_fields=output_fields)

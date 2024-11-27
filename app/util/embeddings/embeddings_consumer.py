@@ -44,14 +44,25 @@ class EmbeddingsRabbitMqConsumer(RabbitMqConsumer):
         repo = DataScrapeRepository()
         open_ai_service = OpenAiService()
         documents = await repo.get_data_scrape_job_url(embeddings_type)
+        print(f"processing {len(documents)} documents")
+        count = 0
         for document in documents:
+            print(count)
             try:
                 result = open_ai_service.get_embedding_by_url(document.url)
-                print(f"Existing vectors found for url: {document.url} total: {len(result)}")
                 if len(result) == 0:
                     embedding = Embedding(embeddings_type=embeddings_type,
                                           text=document.text, url=document.url)
+                    embedding = open_ai_service.generate_embeddings_from_openai(embedding, create_embeddings)
                     open_ai_service.create_embedding(embedding, create_embeddings)
+                else:
+                    print(f"Existing vectors found for url: {document.url} total: {len(result)}")
+                    embedding = Embedding(embeddings_type=embeddings_type,
+                                          text=document.text, url=document.url,
+                                          vector=result[0]["vector"])
+                    open_ai_service.create_embedding(embedding, create_embeddings)
+                count += 1
             except Exception as e:
+                count += 1
                 print("Broke on document")
                 print(e)
