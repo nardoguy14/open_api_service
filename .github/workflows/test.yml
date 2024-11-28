@@ -25,7 +25,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: username/repository-name:latest
+          tags: nardoarevalo14/openai_embeddings_service:latest
 
 
   duhjob:
