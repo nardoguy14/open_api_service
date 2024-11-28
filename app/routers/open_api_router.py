@@ -24,7 +24,7 @@ def get_embeddings(embeddings_type: str, create_embeddings: bool = Query(False))
 def create_question(question: ChatGptQuestionReq):
     filter = f'$meta["embeddings_type"] == "{question.embeddings_type}"'
     embedding_of_query = open_ai_service.get_embedding_from_open_ai(question.query)
-    embeddings_search_result = open_ai_service.get_related_embeddings(embedding=embedding_of_query, filter_param=filter, output_fields=['text'])
+    embeddings_search_result = open_ai_service.get_related_embeddings(embedding=embedding_of_query, filter_param=filter, output_fields=['text', 'url'])
     texts = []
     for i in embeddings_search_result[0]:
         print(i)
