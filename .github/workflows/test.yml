@@ -1,18 +1,10 @@
 name: Test workflow
 
 on:
-  workflow_dispatch:
-    inputs:
-      var1:
-        description: "var1"
-        required: true
-        default: lala
-        options:
-          - lala
-      s3_key:
-        description: "just a key"
-        required: true
-
+  push:
+    branches:
+      - '**'
+      - '!main'
 
 jobs:
   build_docker_continers:
