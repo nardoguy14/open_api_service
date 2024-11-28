@@ -20,4 +20,3 @@ RUN rm -rf /app/util/embeddings
 
 
 CMD poetry run python -m app.util.data_scrape.rabbit_mq_consumer
-#CMD "tail -f /dev/null"
