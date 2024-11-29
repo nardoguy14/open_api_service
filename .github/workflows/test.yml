@@ -42,14 +42,3 @@ jobs:
           file: ./Dockerfile-embeddings-rabbitmq-consumer
           push: true
           tags: nardoarevalo14/embeddings_consumer:latest
-
-
-  duhjob:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Add vars to vars file
-        run: |
-          echo "hiiii" >> hi.tt
-          echo "s3_key = \"${{ inputs.var1 }}\"" >> hi.txt
-          echo "partner = \"${{ inputs.s3_key }}\"" >> hi.txt
-          cat hi.txt

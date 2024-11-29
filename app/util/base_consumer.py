@@ -1,13 +1,16 @@
 import pika
 import time
 import aio_pika
-
+import os
 
 class RabbitMqConsumer():
 
     async def async_init(self, exchange_name, routing_key, queue_name, callback):
         time.sleep(10)
-        conn = await aio_pika.connect_robust("amqp://guest:guest@docker.for.mac.localhost")
+        username = os.environ.get('RABBITMQ_USERNAME', 'guest')
+        password = os.environ.get('RABBITMQ_PASSWORD', 'guest')
+        host = os.environ.get('RABBITMQ_HOST', 'docker.for.mac.localhost')
+        conn = await aio_pika.connect_robust(f"amqp://{username}:{password}@{host}")
         channel = await conn.channel()
         exchange = await channel.declare_exchange(exchange_name, type="topic")
         queue = await channel.declare_queue(name=queue_name)
