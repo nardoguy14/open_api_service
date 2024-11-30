@@ -42,8 +42,8 @@ jobs:
           file: ./Dockerfile-embeddings-rabbitmq-consumer
           push: true
           tags: nardoarevalo14/embeddings_consumer:latest
-  Build-Infrastructure:
-    needs: [ Build-Docker-Containers ]
+  build_infrastructure:
+    needs: [ build_docker_continers ]
     runs-on: ubuntu-latest
     environment:
       name: Approval
