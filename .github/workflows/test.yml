@@ -8,8 +8,6 @@ on:
 
 jobs:
   build_docker_continers:
-    environment:
-      name: Approval
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -64,7 +62,7 @@ jobs:
       - name: Create or Update Cloudformation
         run: |
           STACK_NAME="open-ai-embeddings-service"
-          TEMPLATE_FILE="deployment/infra_cloudformation.yml"
+          TEMPLATE_FILE="deployments/infra_cloudformation.yml"
           CAPABILITIES="CAPABILITY_IAM"
 
           aws cloudformation list-stacks > stacks.json
