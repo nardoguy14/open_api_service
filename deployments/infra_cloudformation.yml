@@ -1,0 +1,258 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create an EC2 instance, CodeDeploy application, and deployment group.
+
+Parameters:
+  RDSPASSWORD:
+    Type: String
+    NoEcho: true
+  VPC_ID:
+    Type: String
+    NoEcho: false
+    Default: vpc-0cb3bfa4e20df9a0b
+  SUBNET_ID_1:
+    Type: String
+    NoEcho: false
+    Default: subnet-0e344b84222462d0e
+  SUBNET_ID_2:
+    Type: String
+    NoEcho: false
+    Default: subnet-0852bbe71fdcaaa4d
+  ACM_CERTIFICATE_ARN:
+    Type: String
+    NoEcho: false
+    Default: arn:aws:acm:us-east-1:132856321237:certificate/45530721-8088-4929-a7fe-c7e292addd11
+
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: discord-bot-leagues
+
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow HTTP and HTTPS traffic
+      VpcId: !Ref VPC_ID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+  ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: open-ai-embeddings-alb
+      Subnets:
+        - !Ref SUBNET_ID_1
+        - !Ref SUBNET_ID_2
+      SecurityGroups:
+        - !Ref ALBSecurityGroup
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '60'
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !Ref VPC_ID
+      Port: 80
+      Protocol: HTTP
+      TargetType: instance
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 5
+      UnhealthyThresholdCount: 2
+      Targets:
+        - Id: !Ref EC2Instance
+          Port: 80
+
+  HTTPListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: redirect
+          RedirectConfig:
+            Protocol: HTTPS
+            Port: '443'
+            StatusCode: HTTP_301
+      LoadBalancerArn: !Ref ALB
+      Port: 80
+      Protocol: HTTP
+
+  HTTPSListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref ALB
+      Port: 443
+      Protocol: HTTPS
+      Certificates:
+        - CertificateArn: !Ref ACM_CERTIFICATE_ARN
+
+
+  EC2InstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: 'EC2InstancePolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:*'
+                  - 'codedeploy:*'
+                  - 'logs:*'
+                  - 'ssm:*'
+                  - 'mq:*'
+                  - 'rds:*'
+                Resource: '*'
+
+  EC2InstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Roles:
+        - !Ref EC2InstanceRole
+
+  CodeDeployServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codedeploy.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: 'CodeDeployPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:*"
+                  - "codedeploy:*"
+                  - 'ec2:Describe*'
+                  - 'ec2:StopInstances'
+                  - 'ec2:TerminateInstances'
+                  - 'ec2:UpdateInstance'
+                  - 'tag:GetTags'
+                  - 'tag:TagResources'
+                  - 'autoscaling:CompleteLifecycleAction'
+                  - 'autoscaling:DeleteLifecycleHook'
+                  - 'autoscaling:PutLifecycleHook'
+                  - 'autoscaling:RecordLifecycleActionHeartbeat'
+                Resource: '*'
+
+  EC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-08a0d1e16fc3f61ea' # Update this to the desired AMI ID
+      InstanceType: 't2.micro'
+      IamInstanceProfile: !Ref EC2InstanceProfile
+      KeyName: 'nardos-key-pair' # Update this to your key pair
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          echo "export POSTGRES_PASSWORD=${RDSPASSWORD}" >> /etc/profile.d/myenvvars.sh
+          source /etc/profile.d/myenvvars.sh
+          sudo yum update -y
+          sudo yum install ruby wget -y
+          cd /home/ec2-user
+          wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
+          chmod +x ./install
+          sudo ./install auto
+          sudo service codedeploy-agent status
+          sudo yum install docker -y
+          sudo service docker start
+          sudo systemctl enable docker
+          docker --version
+      SecurityGroupIds:
+        - !Ref EC2SecurityGroup
+      Tags:
+        - Key: Name
+          Value: 'CodeDeployDemoInstance'
+        - Key: Environment
+          Value: 'Production'
+
+  EC2SecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Enable SSH and HTTP access'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 15672
+          ToPort: 15672
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+
+  CodeDeployApplication:
+    Type: 'AWS::CodeDeploy::Application'
+    Properties:
+      ApplicationName: 'Open-Ai-Embeddings-Service'
+      ComputePlatform: 'Server'
+
+
+  CodeDeployDeploymentGroup:
+    Type: 'AWS::CodeDeploy::DeploymentGroup'
+    Properties:
+      ApplicationName: !Ref CodeDeployApplication
+      DeploymentGroupName: 'Open-Ai-Embeddings-Service-EC2-Deployment-Group'
+      ServiceRoleArn: !GetAtt CodeDeployServiceRole.Arn
+      DeploymentConfigName: 'CodeDeployDefault.OneAtATime'
+      Ec2TagFilters:
+        - Key: 'Environment'
+          Value: 'Production'
+          Type: 'KEY_AND_VALUE'
+      AutoRollbackConfiguration:
+        Enabled: true
+        Events:
+          - DEPLOYMENT_FAILURE
+          - DEPLOYMENT_STOP_ON_ALARM
+          - DEPLOYMENT_STOP_ON_REQUEST
+
+Outputs:
+  EC2InstanceID:
+    Description: 'ID of the EC2 instance'
+    Value: !Ref EC2Instance
+
+  CodeDeployApplicationName:
+    Description: 'Name of the CodeDeploy Application'
+    Value: !Ref CodeDeployApplication
+
+  CodeDeployDeploymentGroupName:
+    Description: 'Name of the CodeDeploy Deployment Group'
+    Value: !Ref CodeDeployDeploymentGroup
+
+  ALBEndpoint:
+    Value: !GetAtt ALB.DNSName
+    Description: "The DNS name of the ALB"

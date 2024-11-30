@@ -42,3 +42,40 @@ jobs:
           file: ./Dockerfile-embeddings-rabbitmq-consumer
           push: true
           tags: nardoarevalo14/embeddings_consumer:latest
+  Build-Infrastructure:
+    needs: [ Build-Docker-Containers ]
+    runs-on: ubuntu-latest
+    environment:
+      name: Approval
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Create or Update Cloudformation
+        run: |
+          STACK_NAME="open-ai-embeddings-service"
+          TEMPLATE_FILE="deployment/infra_cloudformation.yml"
+          CAPABILITIES="CAPABILITY_IAM"
+
+          aws cloudformation list-stacks > stacks.json
+          cat stacks.json
+          STACK_EXISTS=$(python scripts/parse_stacks.py "$STACK_NAME")
+
+          if [[ "$STACK_EXISTS" == "nostack" ]]; then
+            echo "Stack does not exist. Creating stack..."
+            aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --parameters ParameterKey=RDSPASSWORD,ParameterValue="${{ secrets.RDS_PASSWORD }}" --capabilities $CAPABILITIES
+            aws cloudformation wait stack-create-complete --stack-name $STACK_NAME
+          else
+            echo "Stack exists. Updating stack..."
+            aws cloudformation update-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --parameters ParameterKey=RDSPASSWORD,ParameterValue="${{ secrets.RDS_PASSWORD }}" --capabilities $CAPABILITIES 2>&1 && \
+            aws cloudformation wait stack-update-complete --stack-name $STACK_NAME 2>&1 || echo "update stack failed"
+            exit 0
+          fi
