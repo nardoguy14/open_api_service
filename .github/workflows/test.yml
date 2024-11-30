@@ -8,6 +8,8 @@ on:
 
 jobs:
   build_docker_continers:
+    environment:
+      name: Approval
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
