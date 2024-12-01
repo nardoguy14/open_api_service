@@ -7,7 +7,42 @@ on:
       - '!main'
 
 jobs:
+  build_rds_infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Create or Update Cloudformation
+        run: |
+          STACK_NAME="rds-stack"
+          TEMPLATE_FILE="deployments/infra_db_cloudformation.yml"
+          CAPABILITIES="CAPABILITY_IAM"
+
+          aws cloudformation list-stacks > stacks.json
+          cat stacks.json
+          STACK_EXISTS=$(python scripts/parse_stacks.py "rds-infra")
+
+          if [[ "$STACK_EXISTS" == "nostack" ]]; then
+            echo "Stack does not exist. Creating stack..."
+            aws cloudformation create-stack --stack-name rds-infra --template-body file://$TEMPLATE_FILE --parameters ParameterKey=RDSPASSWORD,ParameterValue="${{ secrets.RDS_PASSWORD }}" --capabilities $CAPABILITIES
+            aws cloudformation wait stack-create-complete --stack-name rds-infra
+          else
+            echo "Stack exists. Updating stack..."
+            aws cloudformation update-stack --stack-name rds-infra --template-body file://$TEMPLATE_FILE --parameters ParameterKey=RDSPASSWORD,ParameterValue="${{ secrets.RDS_PASSWORD }}" --capabilities $CAPABILITIES 2>&1 && \
+            aws cloudformation wait stack-update-complete --stack-name rds-infra || echo "command failed"
+          fi
+
   build_docker_continers:
+    needs: ['build_rds_infrastructure']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

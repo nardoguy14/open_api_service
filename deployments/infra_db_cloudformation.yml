@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create an RDS instances.
+
+Parameters:
+  RDSPASSWORD:
+    Type: String
+    NoEcho: true
+  VPC_ID:
+    Type: String
+    NoEcho: false
+    Default: vpc-0cb3bfa4e20df9a0b
+  SUBNET_ID_1:
+    Type: String
+    NoEcho: false
+    Default: subnet-0e344b84222462d0e
+  SUBNET_ID_2:
+    Type: String
+    NoEcho: false
+    Default: subnet-0852bbe71fdcaaa4d
+  DB_INSTANCE_IDENTIFIER:
+    Type: String
+    Default: nardos_db
+  DB_NAME:
+    Type: String
+    Default: nardos_db
+
+
+Resources:
+
+  RDSSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Security group for RDS instance'
+      VpcId: !Ref VPC_ID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: '0.0.0.0/0'
+
+  RDSInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBInstanceIdentifier: !Ref DB_INSTANCE_IDENTIFIER
+      DBName: !Ref DB_NAME
+      MasterUsername: admin
+      MasterUserPassword: !Ref RDSPASSWORD
+      DBInstanceClass: 'db.t3.micro'
+      AllocatedStorage: '20'
+      Engine: 'postgres'
+      VPCSecurityGroups:
+        - !Ref RDSSecurityGroup
+      DBSubnetGroupName: !Ref RDSSubnetGroup
+      MultiAZ: false
+      PubliclyAccessible: true
+      StorageType: 'gp2'
+
+  RDSSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: 'Subnet group for RDS instance'
+      SubnetIds:
+        - !Ref  SUBNET_ID_1
+        - !Ref  SUBNET_ID_2
+
+Outputs:
+
+  RDSInstanceEndpoint:
+    Description: "The endpoint address of the RDS instance"
+    Value: !GetAtt RDSInstance.Endpoint.Address
+
+  RDSInstanceArn:
+    Description: "The ARN of the RDS instance"
+    Value: !Ref RDSInstance
