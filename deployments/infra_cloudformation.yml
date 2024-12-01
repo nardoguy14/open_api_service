@@ -2,26 +2,26 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFormation template to create an EC2 instance, CodeDeploy application, and deployment group.
 
 Parameters:
-  RDSPASSWORD:
+  RdsPassword:
     Type: String
     NoEcho: true
-  VPC_ID:
+  VpcId:
     Type: String
     NoEcho: false
     Default: 'vpc-0cb3bfa4e20df9a0b'
-  SUBNET_ID_1:
+  SubnetId1:
     Type: String
     NoEcho: false
     Default: 'subnet-0e344b84222462d0e'
-  SUBNET_ID_2:
+  SubnetId2:
     Type: String
     NoEcho: false
     Default: 'subnet-0852bbe71fdcaaa4d'
-  ACM_CERTIFICATE_ARN:
+  AcmCertificateArn:
     Type: String
     NoEcho: false
     Default: 'arn:aws:acm:us-east-1:132856321237:certificate/45530721-8088-4929-a7fe-c7e292addd11'
-  KEYPAIR_NAME:
+  KeypairName:
     Type: String
     Default: 'OpenAiEmbeddingsServiceKeyPair'
 
@@ -29,7 +29,7 @@ Resources:
   KeyPairForEc2:
     Type: AWS::EC2::KeyPair
     Properties:
-      KeyName: !Ref KEYPAIR_NAME
+      KeyName: !Ref KeypairName
 
   MyS3Bucket:
     Type: AWS::S3::Bucket
@@ -40,7 +40,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow HTTP and HTTPS traffic
-      VpcId: !Ref VPC_ID
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
@@ -56,8 +56,8 @@ Resources:
     Properties:
       Name: open-ai-embeddings-alb
       Subnets:
-        - !Ref SUBNET_ID_1
-        - !Ref SUBNET_ID_2
+        - !Ref SubnetId1
+        - !Ref SubnetId2
       SecurityGroups:
         - !Ref ALBSecurityGroup
       Scheme: internet-facing
@@ -68,7 +68,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      VpcId: !Ref VPC_ID
+      VpcId: !Ref VpcId
       Port: 80
       Protocol: HTTP
       TargetType: instance
@@ -105,7 +105,7 @@ Resources:
       Port: 443
       Protocol: HTTPS
       Certificates:
-        - CertificateArn: !Ref ACM_CERTIFICATE_ARN
+        - CertificateArn: !Ref AcmCertificateArn
 
 
   EC2InstanceRole:
@@ -180,7 +180,7 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          echo "export POSTGRES_PASSWORD=${RDSPASSWORD}" >> /etc/profile.d/myenvvars.sh
+          echo "export POSTGRES_PASSWORD=${RdsPassword}" >> /etc/profile.d/myenvvars.sh
           source /etc/profile.d/myenvvars.sh
           sudo yum update -y
           sudo yum install ruby wget -y
