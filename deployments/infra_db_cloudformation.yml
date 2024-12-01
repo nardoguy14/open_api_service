@@ -44,7 +44,7 @@ Resources:
     Properties:
       DBInstanceIdentifier: !Ref DbInstanceIdentifier
       DBName: !Ref DbName
-      MasterUsername: admin
+      MasterUsername: nardo
       MasterUserPassword: !Ref RdsPassword
       DBInstanceClass: 'db.t3.micro'
       AllocatedStorage: '20'
