@@ -23,7 +23,7 @@ Parameters:
     Default: nardos-db
   DbName:
     Type: String
-    Default: nardos-db
+    Default: nardosdb
 
 
 Resources:
