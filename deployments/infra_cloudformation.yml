@@ -21,8 +21,16 @@ Parameters:
     Type: String
     NoEcho: false
     Default: arn:aws:acm:us-east-1:132856321237:certificate/45530721-8088-4929-a7fe-c7e292addd11
+  KEYPAIR_NAME:
+    Type: String
+    Default: OpenAiEmbeddingsServiceKeyPair
 
 Resources:
+  KeyPairForEc2:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: !Ref KEYPAIR_NAME
+
   MyS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -168,7 +176,7 @@ Resources:
       ImageId: 'ami-08a0d1e16fc3f61ea' # Update this to the desired AMI ID
       InstanceType: 't2.micro'
       IamInstanceProfile: !Ref EC2InstanceProfile
-      KeyName: 'nardos-key-pair' # Update this to your key pair
+      KeyName: !Ref KeyPairForEc2
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
