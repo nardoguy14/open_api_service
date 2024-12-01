@@ -19,10 +19,10 @@ Parameters:
     Default: subnet-0852bbe71fdcaaa4d
   DbInstanceIdentifier:
     Type: String
-    Default: nardos_db
+    Default: nardos-db
   DbName:
     Type: String
-    Default: nardos_db
+    Default: nardos-db
 
 
 Resources:
