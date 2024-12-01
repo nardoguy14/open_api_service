@@ -8,22 +8,22 @@ Parameters:
   VPC_ID:
     Type: String
     NoEcho: false
-    Default: vpc-0cb3bfa4e20df9a0b
+    Default: 'vpc-0cb3bfa4e20df9a0b'
   SUBNET_ID_1:
     Type: String
     NoEcho: false
-    Default: subnet-0e344b84222462d0e
+    Default: 'subnet-0e344b84222462d0e'
   SUBNET_ID_2:
     Type: String
     NoEcho: false
-    Default: subnet-0852bbe71fdcaaa4d
+    Default: 'subnet-0852bbe71fdcaaa4d'
   ACM_CERTIFICATE_ARN:
     Type: String
     NoEcho: false
-    Default: arn:aws:acm:us-east-1:132856321237:certificate/45530721-8088-4929-a7fe-c7e292addd11
+    Default: 'arn:aws:acm:us-east-1:132856321237:certificate/45530721-8088-4929-a7fe-c7e292addd11'
   KEYPAIR_NAME:
     Type: String
-    Default: OpenAiEmbeddingsServiceKeyPair
+    Default: 'OpenAiEmbeddingsServiceKeyPair'
 
 Resources:
   KeyPairForEc2:
