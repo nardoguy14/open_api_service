@@ -187,6 +187,7 @@ Resources:
           echo "export MIVILUS_HOST=http://standalone" >> /etc/profile.d/myenvvars.sh
           echo "export MIVILUS_PORT=19530" >> /etc/profile.d/myenvvars.sh
           echo "export OPENAI_API_KEY=${OpenAiApiKey}" >> /etc/profile.d/myenvvars.sh
+          
           source /etc/profile.d/myenvvars.sh
           sudo yum update -y
           sudo yum install ruby wget -y
