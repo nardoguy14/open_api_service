@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pwd
+echo "yo"
 export POSTGRES_HOST=$(aws rds describe-db-instances --db-instance-identifier nardos-db --query "DBInstances[0].Endpoint.Address")
 export POSTGRES_HOST=$(echo ${POSTGRES_HOST//\"/})
 export POSTGRES_DB=nardosdb
