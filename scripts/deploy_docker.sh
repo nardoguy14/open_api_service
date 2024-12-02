@@ -7,6 +7,8 @@ export POSTGRES_HOST=$(echo ${POSTGRES_HOST//\"/})
 export POSTGRES_DB=nardosdb
 export POSTGRES_USER=nardo
 export POSTGRES_PASSWORD=$POSTGRES_PASSWORD # set by git actions to cloudformation to userdata in ec2
+
+echo $POSTGRES_HOST
 #
 #export USING_FAST_API=1
 #

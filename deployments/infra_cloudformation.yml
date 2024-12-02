@@ -179,6 +179,11 @@ Resources:
       InstanceType: 't2.micro'
       IamInstanceProfile: !Ref EC2InstanceProfile
       KeyName: !Ref KeyPairForEc2
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda  # Root volume
+          Ebs:
+            VolumeSize: 20       # Size in GiB
+            VolumeType: gp3
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
