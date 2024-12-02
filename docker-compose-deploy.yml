@@ -2,24 +2,6 @@ version: '3.5'
 
 services:
 
-  minio:
-    container_name: milvus_minio_embed_svc
-    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
-    environment:
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: minioadmin
-    ports:
-      - "9001:9001"
-      - "9000:9000"
-    volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
-    command: minio server /minio_data --console-address ":9001"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
-
   attu:
     container_name: attu_svc
     image: zilliz/attu:v2.4
@@ -30,18 +12,18 @@ services:
 
   standalone:
     container_name: milvus_standalone_embed_svc
-    image: milvusdb/milvus:v2.4.0
+    image: milvusdb/milvus:v2.5.0-beta
     command: ["milvus", "run", "standalone"]
     security_opt:
       - seccomp:unconfined
     environment:
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      MINIO_ADDRESS: minio:9000
+      ETCD_USE_EMBED: "true"
+      ETCD_DATA_DIR: "/var/lib/milvus/etcd"
+      ETCD_CONFIG_PATH: "/milvus/configs/embedEtcd.yaml"
+      COMMON_STORAGETYPE: "local"
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/milvus:/var/lib/milvus
+      - ./embedEtcd.yaml:/milvus/configs/embedEtcd.yaml
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
       interval: 30s
@@ -51,8 +33,7 @@ services:
     ports:
       - "19530:19530"
       - "9091:9091"
-    depends_on:
-      - "minio"
+      - "2379:2379"
 
   rabbitmq:
     container_name: rabbitmq_embed_svc
@@ -60,7 +41,6 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-      - "2379:2379"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -114,7 +94,6 @@ services:
       CONSUMER: 1
     depends_on:
       - rabbitmq
-      - postgres
       - standalone
 
   embeddings_worker:
@@ -136,7 +115,6 @@ services:
       CONSUMER: 1
     depends_on:
       - rabbitmq
-      - postgres
       - standalone
 
 networks:
