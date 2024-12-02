@@ -69,4 +69,4 @@ export POSTGRES_PASSWORD=$POSTGRES_PASSWORD # set by git actions to cloudformati
 # --network my-network \
 # nardoarevalo14/datascrape_consumer:latest
 
-docker-compose up
+docker-compose -f /home/ec2-user/app/docker-compose.yml up
