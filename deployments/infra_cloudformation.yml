@@ -34,7 +34,7 @@ Resources:
   MyS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: discord-bot-leagues
+      BucketName: open-ai-embeddings-service-leagues
 
   ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
