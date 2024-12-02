@@ -20,7 +20,7 @@ Parameters:
   AcmCertificateArn:
     Type: String
     NoEcho: false
-    Default: 'arn:aws:acm:us-east-1:132856321237:certificate/45530721-8088-4929-a7fe-c7e292addd11'
+    Default: 'arn:aws:acm:us-east-1:975050229905:certificate/7bdc36d8-75fb-4f85-88d0-1db5a9e69266'
   KeypairName:
     Type: String
     Default: 'OpenAiEmbeddingsServiceKeyPair'
