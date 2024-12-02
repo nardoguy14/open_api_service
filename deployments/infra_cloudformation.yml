@@ -182,6 +182,7 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
+          
           echo "export POSTGRES_PASSWORD=${RdsPassword}" >> /etc/profile.d/myenvvars.sh
           echo "export MIVILUS_HOST=http://standalone" >> /etc/profile.d/myenvvars.sh
           echo "export MIVILUS_PORT=19530" >> /etc/profile.d/myenvvars.sh
