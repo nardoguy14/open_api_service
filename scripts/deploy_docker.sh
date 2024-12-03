@@ -71,4 +71,4 @@ echo $POSTGRES_HOST
 # --network my-network \
 # nardoarevalo14/datascrape_consumer:latest
 
-sudo docker-compose -f /home/ec2-user/app/docker-compose-deploy.yml up
+sudo docker-compose -f /home/ec2-user/app/docker-compose-deploy.yml up -d
