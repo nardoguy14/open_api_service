@@ -72,4 +72,5 @@ echo $POSTGRES_HOST
 # nardoarevalo14/datascrape_consumer:latest
 
 
-sudo docker-compose -f /home/ec2-user/app/docker-compose-deploy.yml up -d
+#sudo docker-compose -f /home/ec2-user/app/docker-compose-deploy.yml up -d
+echo "hello : )"
